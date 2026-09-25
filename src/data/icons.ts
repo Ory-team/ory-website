@@ -1,0 +1,6 @@
+export const icons: Record<string, string> = {
+  gameory: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10h.01M4 10a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2l1 6a2 2 0 0 1-3.2 1.6L16 16H8l-1.8 1.6A2 2 0 0 1 3 16z"/><path d="M9 8v4M7 10h4"/><circle cx="16" cy="9" r=".6" fill="currentColor"/><circle cx="18" cy="11" r=".6" fill="currentColor"/></svg>`,
+  ludory: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="11" height="15" rx="2" transform="rotate(-9 8.5 14.5)"/><rect x="9" y="4" width="12" height="16" rx="2"/></svg>`,
+  showry: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l1.5-4h4L7 8"/><path d="M8 8l1.5-4h4L12 8"/><path d="M13 8l1.5-4h4L17 8"/><rect x="3" y="8" width="18" height="12" rx="1"/></svg>`,
+  libory: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v18H6.5A2.5 2.5 0 0 0 4 23z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v18h5.5a2.5 2.5 0 0 1 2.5 2z"/></svg>`,
+};

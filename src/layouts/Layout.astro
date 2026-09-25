@@ -1,0 +1,78 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Ory — four offline apps for keeping track of what you’re into.' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/logos/gameory.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --canvas: #150a30;
+    --canvas-2: #1f1247;
+    --panel: rgba(18, 11, 40, 0.55);
+    --panel-solid: #140b30;
+    --border: rgba(180, 160, 255, 0.16);
+    --ink: #f5f3fa;
+    --muted: #b3a8d6;
+    --accent: #ff2f78;
+    --accent-2: #8b6cf0;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: radial-gradient(1200px 800px at 15% -10%, var(--canvas-2), transparent 60%), var(--canvas);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: 'Work Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  button {
+    font-family: inherit;
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
+  }
+</style>

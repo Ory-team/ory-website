@@ -1,0 +1,1517 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { apps } from '../data/apps';
+import { fetchGithubInfo } from '../lib/github';
+import { strings } from '../data/i18n';
+
+const appsData = await Promise.all(
+  apps.map(async (app) => ({ ...app, github: await fetchGithubInfo(app.githubOwner, app.githubRepo) })),
+);
+const first = appsData[0];
+const t = strings.en;
+
+function hexToRgba(hex: string, alpha: number) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+---
+
+<Layout title="Ory — four apps, one philosophy">
+  <div class="stage">
+    <section class="hero" id="hero">
+      <header class="nav">
+        <span class="wordmark">ORY</span>
+        <div class="nav-right">
+          <button class="nav-link" id="faqTrigger">{t.navFaq}</button>
+          <a href="https://github.com/Ory-team" class="nav-link" target="_blank" rel="noopener">GitHub</a>
+          <div class="lang-toggle" id="langToggle">
+            <button class="lang-btn" data-lang="fr" aria-label="Français">FR</button>
+            <button class="lang-btn is-active" data-lang="en" aria-label="English">EN</button>
+          </div>
+          <button class="menu-btn" id="menuBtn" aria-label={t.navMenu}>
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </header>
+
+      <canvas class="particles" id="particles" aria-hidden="true"></canvas>
+
+      <div class="hero-body">
+        <div class="showcase">
+          <div class="showcase-visual">
+            <div class="art-glow" id="artGlow" style={`background:${first.color}`} aria-hidden="true"></div>
+            <div class="art-ring" aria-hidden="true"></div>
+            <img id="heroLogo" src={first.logo} alt={`${first.name} logo`} class="art-logo" />
+          </div>
+
+          <div
+            class={`screens${first.screenshots ? ' has-shots' : ''}`}
+            id="screens"
+            style={`--screen-color:${first.color}`}
+          >
+            <div class="screen pos-left">
+              <img class="screen-shot" src={first.screenshots?.[0] ?? ''} alt="" />
+              <span class="screen-header" />
+              <span class="screen-line w70" />
+              <span class="screen-row" />
+              <span class="screen-row" />
+              <span class="screen-row" />
+            </div>
+            <div class="screen pos-front">
+              <img class="screen-shot" src={first.screenshots?.[1] ?? ''} alt="" />
+              <span class="screen-header" />
+              <span class="screen-grid"><span /><span /><span /><span /></span>
+            </div>
+            <div class="screen pos-right">
+              <img class="screen-shot" src={first.screenshots?.[2] ?? ''} alt="" />
+              <span class="screen-header" />
+              <span class="screen-bars">
+                <span style="height:40%" /><span style="height:70%" /><span style="height:50%" /><span style="height:85%" /><span style="height:60%" />
+              </span>
+            </div>
+            <span class="screen-tag" id="screenTag" style={first.screenshots ? 'display:none' : ''}>
+              {t.mockup}
+            </span>
+          </div>
+        </div>
+
+        <div class="hero-text">
+          <span class="kicker" id="kicker">{t.kicker}</span>
+          <h1 id="heroName">{first.name}</h1>
+          <p id="heroTagline">{first.tagline.en}</p>
+          <ul class="feature-list" id="featureList" style={`--feature-color:${first.color}`}>
+            {first.features.en.map((f: string) => <li>{f}</li>)}
+          </ul>
+          <div class="hero-cta-row">
+            <a
+              href={first.github.downloadUrl}
+              id="heroDownload"
+              class="btn-outline"
+              target="_blank"
+              rel="noopener"
+              style={`--cta-color:${first.color};--cta-shadow:${hexToRgba(first.color, 0.4)}`}
+            >
+              <span id="heroDownloadLabel">
+                {first.github.version ? `${t.downloadPrefix}${first.github.version}` : t.downloadLatest}
+              </span>
+              <span class="btn-arrow">↓</span>
+            </a>
+            <a href={first.github.repoUrl} id="heroStar" class="btn-star" target="_blank" rel="noopener">
+              <span class="star-glyph">★</span>
+              <span id="heroStarCount">{first.github.stars ?? '–'}</span>
+              <span class="star-hint" id="starHint">{t.starIt}</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-controls">
+        <button class="nav-arrow" id="prevBtn" aria-label={t.prevApp}>‹</button>
+
+        <div class="thumbs" id="thumbs">
+          {
+            appsData.map((app, i) => (
+              <button
+                class={`thumb${i === 0 ? ' is-active' : ''}`}
+                style={`--dot-color:${app.color}`}
+                data-index={i}
+                data-name={app.name}
+                data-tagline-en={app.tagline.en}
+                data-tagline-fr={app.tagline.fr}
+                data-logo={app.logo}
+                data-color={app.color}
+                data-gradient={app.gradient}
+                data-features-en={JSON.stringify(app.features.en)}
+                data-features-fr={JSON.stringify(app.features.fr)}
+                data-screenshots={JSON.stringify(app.screenshots ?? [])}
+                data-version={app.github.version ?? ''}
+                data-download-url={app.github.downloadUrl}
+                data-repo-url={app.github.repoUrl}
+                data-stars={app.github.stars ?? ''}
+                aria-label={`${t.showApp} ${app.name}`}
+              >
+                <svg class="thumb-ring" viewBox="0 0 48 48" aria-hidden="true">
+                  <rect class="thumb-ring-track" x="1.5" y="1.5" width="45" height="45" rx="13" pathLength="100" />
+                  <rect class="thumb-ring-fill" x="1.5" y="1.5" width="45" height="45" rx="13" pathLength="100" />
+                </svg>
+                <img src={app.logo} alt="" />
+              </button>
+            ))
+          }
+        </div>
+
+        <button class="nav-arrow" id="nextBtn" aria-label={t.nextApp}>›</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-overlay" id="faqOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="faqTitle">
+      <button class="modal-close" id="faqClose" aria-label={t.faqClose}>✕</button>
+      <span class="eyebrow" id="faqEyebrow">{t.faqEyebrow}</span>
+      <h2 id="faqTitle">{t.faqTitle}</h2>
+
+      <div class="faq-list">
+        {
+          t.faq.map((item, i) => (
+            <div class="faq-item">
+              <button class="faq-trigger" aria-expanded="false">
+                <span id={`faqQ${i}`}>{item.q}</span>
+                <span class="faq-chevron">⌄</span>
+              </button>
+              <div class="faq-answer">
+                <p id={`faqA${i}`}>{item.a}</p>
+                {'cta' in item && (
+                  <a href={item.href} class="btn-solid" id={`faqCta${i}`}>
+                    {item.cta}
+                  </a>
+                )}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay lightbox-overlay" id="lightboxOverlay">
+    <button class="modal-close lightbox-close" id="lightboxClose" aria-label={t.faqClose}>✕</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label={t.prevApp}>‹</button>
+    <div class="lightbox-frame">
+      <img class="lightbox-image" id="lightboxImage" alt="" />
+    </div>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label={t.nextApp}>›</button>
+  </div>
+</Layout>
+
+<script>
+  import { strings, type Locale } from '../data/i18n';
+
+  const hero = document.getElementById('hero') as HTMLElement;
+  const heroBody = document.querySelector('.hero-body') as HTMLElement;
+  const heroLogo = document.getElementById('heroLogo') as HTMLImageElement;
+  const heroName = document.getElementById('heroName') as HTMLElement;
+  const heroTagline = document.getElementById('heroTagline') as HTMLElement;
+  const featureList = document.getElementById('featureList') as HTMLElement;
+  const heroDownload = document.getElementById('heroDownload') as HTMLAnchorElement;
+  const heroDownloadLabel = document.getElementById('heroDownloadLabel') as HTMLElement;
+  const heroStar = document.getElementById('heroStar') as HTMLAnchorElement;
+  const heroStarCount = document.getElementById('heroStarCount') as HTMLElement;
+  const artGlow = document.getElementById('artGlow') as HTMLElement;
+  const screens = document.getElementById('screens') as HTMLElement;
+  const prevBtn = document.getElementById('prevBtn') as HTMLButtonElement;
+  const nextBtn = document.getElementById('nextBtn') as HTMLButtonElement;
+  const thumbs = Array.from(document.querySelectorAll<HTMLButtonElement>('.thumb'));
+
+  const AUTO_MS = 6000;
+
+  function hexToRgba(hex: string, alpha: number) {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let active = 0;
+  let locale: Locale = 'en';
+  let switchTimer: ReturnType<typeof setTimeout> | null = null;
+  let autoTimer: ReturnType<typeof setInterval> | null = null;
+
+  const screenShotEls = Array.from(document.querySelectorAll<HTMLImageElement>('.screen-shot'));
+  const screenEls = Array.from(document.querySelectorAll<HTMLElement>('.screen'));
+  let currentShots: string[] = [];
+
+  function applyState() {
+    const thumb = thumbs[active];
+    const t = strings[locale];
+    const {
+      name = '',
+      logo = '',
+      color = '',
+      version = '',
+      downloadUrl = '#',
+      repoUrl = '#',
+      stars = '',
+      screenshots = '[]',
+    } = thumb.dataset;
+    const tagline = (locale === 'fr' ? thumb.dataset.taglineFr : thumb.dataset.taglineEn) ?? '';
+    const features = (locale === 'fr' ? thumb.dataset.featuresFr : thumb.dataset.featuresEn) ?? '[]';
+    const shots = JSON.parse(screenshots) as string[];
+
+    thumbs.forEach((th, i) => {
+      th.classList.toggle('is-active', i === active);
+      th.setAttribute('aria-label', `${t.showApp} ${th.dataset.name}`);
+    });
+    heroLogo.src = logo;
+    heroLogo.alt = `${name} logo`;
+    heroName.textContent = name;
+    heroTagline.textContent = tagline;
+    heroDownload.href = downloadUrl;
+    heroDownloadLabel.textContent = version ? `${t.downloadPrefix}${version}` : t.downloadLatest;
+    heroStar.href = repoUrl;
+    heroStarCount.textContent = stars || '–';
+    artGlow.style.background = color;
+    screens.style.setProperty('--screen-color', color);
+    screens.classList.toggle('has-shots', shots.length > 0);
+    screenShotEls.forEach((img, i) => {
+      img.src = shots[i] ?? '';
+    });
+    currentShots = shots;
+    screenEls.forEach((el) => {
+      if (shots.length > 0) {
+        el.setAttribute('tabindex', '0');
+        el.setAttribute('role', 'button');
+        el.setAttribute('aria-label', t.enlargeScreenshot);
+      } else {
+        el.removeAttribute('tabindex');
+        el.removeAttribute('role');
+        el.removeAttribute('aria-label');
+      }
+    });
+    screenTagEl.style.display = shots.length > 0 ? 'none' : '';
+    featureList.style.setProperty('--feature-color', color);
+    heroDownload.style.setProperty('--cta-color', color);
+    heroDownload.style.setProperty('--cta-shadow', hexToRgba(color, 0.4));
+
+    featureList.innerHTML = '';
+    (JSON.parse(features) as string[]).forEach((f) => {
+      const li = document.createElement('li');
+      li.textContent = f;
+      featureList.appendChild(li);
+    });
+  }
+
+  function resetProgress() {
+    thumbs.forEach((t) => {
+      const fill = t.querySelector<SVGElement>('.thumb-ring-fill')!;
+      fill.style.transition = 'none';
+      fill.style.strokeDashoffset = '100';
+    });
+    const activeFill = thumbs[active].querySelector<SVGElement>('.thumb-ring-fill')!;
+    void activeFill.getBoundingClientRect();
+    activeFill.style.transition = `stroke-dashoffset ${AUTO_MS}ms linear`;
+    requestAnimationFrame(() => {
+      activeFill.style.strokeDashoffset = '0';
+    });
+  }
+
+  let autoStopped = false;
+
+  function stopAuto() {
+    autoStopped = true;
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = null;
+    thumbs.forEach((t) => {
+      const fill = t.querySelector<SVGElement>('.thumb-ring-fill')!;
+      fill.style.transition = 'none';
+      fill.style.strokeDashoffset = '100';
+    });
+  }
+
+  function restartAuto() {
+    if (autoStopped) return;
+    if (autoTimer) clearInterval(autoTimer);
+    resetProgress();
+    autoTimer = setInterval(() => goTo((active + 1) % thumbs.length), AUTO_MS);
+  }
+
+  function goTo(index: number, userInitiated = false) {
+    if (index === active) return;
+    active = index;
+
+    heroBody.classList.add('is-switching');
+    if (switchTimer) clearTimeout(switchTimer);
+    switchTimer = setTimeout(() => {
+      applyState();
+      heroBody.classList.remove('is-switching');
+    }, 160);
+
+    if (userInitiated) {
+      stopAuto();
+    } else {
+      restartAuto();
+    }
+  }
+
+  thumbs.forEach((thumb, i) => thumb.addEventListener('click', () => goTo(i, true)));
+  prevBtn.addEventListener('click', () => goTo((active - 1 + thumbs.length) % thumbs.length, true));
+  nextBtn.addEventListener('click', () => goTo((active + 1) % thumbs.length, true));
+  restartAuto();
+
+  const POS_CLASSES = ['pos-left', 'pos-front', 'pos-right'];
+  const SCREEN_ROTATE_MS = 4000;
+  let screenRotation = 0;
+  let screenRotateTimer: ReturnType<typeof setInterval> | null = null;
+
+  function applyScreenRotation() {
+    screenEls.forEach((el, i) => {
+      const posIndex = (i + screenRotation) % POS_CLASSES.length;
+      el.classList.remove(...POS_CLASSES);
+      el.classList.add(POS_CLASSES[posIndex]);
+    });
+  }
+
+  function startScreenRotation() {
+    if (screenRotateTimer || reduceMotion) return;
+    screenRotateTimer = setInterval(() => {
+      screenRotation = (screenRotation + 1) % POS_CLASSES.length;
+      applyScreenRotation();
+    }, SCREEN_ROTATE_MS);
+  }
+
+  function stopScreenRotation() {
+    if (screenRotateTimer) clearInterval(screenRotateTimer);
+    screenRotateTimer = null;
+  }
+
+  applyScreenRotation();
+  startScreenRotation();
+  screens.addEventListener('mouseenter', stopScreenRotation);
+  screens.addEventListener('mouseleave', startScreenRotation);
+
+  const lightboxOverlay = document.getElementById('lightboxOverlay') as HTMLElement;
+  const lightboxImage = document.getElementById('lightboxImage') as HTMLImageElement;
+  const lightboxClose = document.getElementById('lightboxClose') as HTMLButtonElement;
+  const lightboxPrev = document.getElementById('lightboxPrev') as HTMLButtonElement;
+  const lightboxNext = document.getElementById('lightboxNext') as HTMLButtonElement;
+  let lightboxIndex = 0;
+
+  function showLightboxAt(index: number) {
+    if (!currentShots.length) return;
+    lightboxIndex = (index + currentShots.length) % currentShots.length;
+    lightboxImage.src = currentShots[lightboxIndex];
+  }
+
+  function openLightbox(index: number) {
+    if (!currentShots.length) return;
+    showLightboxAt(index);
+    lightboxOverlay.classList.add('is-open');
+    if (autoTimer) clearInterval(autoTimer);
+  }
+
+  function closeLightbox() {
+    lightboxOverlay.classList.remove('is-open');
+    restartAuto();
+  }
+
+  screenEls.forEach((el, i) => {
+    el.addEventListener('click', () => openLightbox(i));
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openLightbox(i);
+      }
+    });
+  });
+
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightboxOverlay.addEventListener('click', (e) => {
+    if (e.target === lightboxOverlay) closeLightbox();
+  });
+  lightboxPrev.addEventListener('click', () => showLightboxAt(lightboxIndex - 1));
+  lightboxNext.addEventListener('click', () => showLightboxAt(lightboxIndex + 1));
+  document.addEventListener('keydown', (e) => {
+    if (!lightboxOverlay.classList.contains('is-open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showLightboxAt(lightboxIndex - 1);
+    if (e.key === 'ArrowRight') showLightboxAt(lightboxIndex + 1);
+  });
+
+  const faqTrigger = document.getElementById('faqTrigger') as HTMLButtonElement;
+  const faqOverlay = document.getElementById('faqOverlay') as HTMLElement;
+  const faqClose = document.getElementById('faqClose') as HTMLButtonElement;
+
+  function openFaq() {
+    faqOverlay.classList.add('is-open');
+    if (autoTimer) clearInterval(autoTimer);
+  }
+  function closeFaq() {
+    faqOverlay.classList.remove('is-open');
+    restartAuto();
+  }
+
+  faqTrigger.addEventListener('click', openFaq);
+  faqClose.addEventListener('click', closeFaq);
+  faqOverlay.addEventListener('click', (e) => {
+    if (e.target === faqOverlay) closeFaq();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeFaq();
+  });
+
+  const faqItems = Array.from(document.querySelectorAll('.faq-item'));
+  faqItems.forEach((item) => {
+    const trigger = item.querySelector<HTMLButtonElement>('.faq-trigger')!;
+    trigger.addEventListener('click', () => {
+      const isOpen = item.classList.toggle('is-open');
+      trigger.setAttribute('aria-expanded', String(isOpen));
+    });
+  });
+
+  const langToggle = document.getElementById('langToggle') as HTMLElement;
+  const langBtns = Array.from(langToggle.querySelectorAll<HTMLButtonElement>('.lang-btn'));
+  const kickerEl = document.getElementById('kicker') as HTMLElement;
+  const screenTagEl = document.getElementById('screenTag') as HTMLElement;
+  const starHintEl = document.getElementById('starHint') as HTMLElement;
+  const faqEyebrowEl = document.getElementById('faqEyebrow') as HTMLElement;
+  const faqTitleEl = document.getElementById('faqTitle') as HTMLElement;
+
+  function applyLocale(loc: Locale) {
+    locale = loc;
+    document.documentElement.lang = loc;
+    try {
+      localStorage.setItem('ory-locale', loc);
+    } catch {
+      /* storage unavailable */
+    }
+
+    const t = strings[loc];
+    langBtns.forEach((b) => b.classList.toggle('is-active', b.dataset.lang === loc));
+    kickerEl.textContent = t.kicker;
+    screenTagEl.textContent = t.mockup;
+    starHintEl.textContent = t.starIt;
+    faqEyebrowEl.textContent = t.faqEyebrow;
+    faqTitleEl.textContent = t.faqTitle;
+    prevBtn.setAttribute('aria-label', t.prevApp);
+    nextBtn.setAttribute('aria-label', t.nextApp);
+    faqClose.setAttribute('aria-label', t.faqClose);
+
+    t.faq.forEach((item, i) => {
+      const q = document.getElementById(`faqQ${i}`);
+      const a = document.getElementById(`faqA${i}`);
+      const cta = document.getElementById(`faqCta${i}`);
+      if (q) q.textContent = item.q;
+      if (a) a.textContent = item.a;
+      if (cta && 'cta' in item) cta.textContent = item.cta as string;
+    });
+
+    applyState();
+  }
+
+  langBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const loc = btn.dataset.lang as Locale;
+      if (loc !== locale) applyLocale(loc);
+    });
+  });
+
+  let initialLocale: Locale = 'en';
+  try {
+    const stored = localStorage.getItem('ory-locale');
+    if (stored === 'fr' || stored === 'en') {
+      initialLocale = stored;
+    } else if (navigator.language?.toLowerCase().startsWith('fr')) {
+      initialLocale = 'fr';
+    }
+  } catch {
+    if (navigator.language?.toLowerCase().startsWith('fr')) initialLocale = 'fr';
+  }
+  applyLocale(initialLocale);
+
+  const particleCanvas = document.getElementById('particles') as HTMLCanvasElement;
+  const ctx = particleCanvas.getContext('2d');
+
+  if (ctx) {
+    let particles: { x: number; y: number; r: number; a: number; vy: number; vx: number }[] = [];
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    function resize() {
+      const { clientWidth, clientHeight } = hero;
+      particleCanvas.width = clientWidth * dpr;
+      particleCanvas.height = clientHeight * dpr;
+      particleCanvas.style.width = `${clientWidth}px`;
+      particleCanvas.style.height = `${clientHeight}px`;
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const count = Math.round((clientWidth * clientHeight) / 14000);
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * clientWidth,
+        y: Math.random() * clientHeight,
+        r: Math.random() * 1.6 + 0.4,
+        a: Math.random() * 0.5 + 0.15,
+        vy: -(Math.random() * 0.12 + 0.03),
+        vx: (Math.random() - 0.5) * 0.05,
+      }));
+    }
+
+    function draw() {
+      const w = hero.clientWidth;
+      const h = hero.clientHeight;
+      ctx!.clearRect(0, 0, w, h);
+      ctx!.fillStyle = '#ffffff';
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.y < -4) p.y = h + 4;
+        if (p.x < -4) p.x = w + 4;
+        if (p.x > w + 4) p.x = -4;
+        ctx!.globalAlpha = p.a;
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx!.fill();
+      }
+      ctx!.globalAlpha = 1;
+      if (!reduceMotion) requestAnimationFrame(draw);
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    draw();
+  }
+</script>
+
+<style>
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .stage {
+    height: 100vh;
+    height: 100dvh;
+    width: 100%;
+  }
+
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: linear-gradient(160deg, #1a1040 0%, #100829 70%);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 40px;
+    flex-shrink: 0;
+  }
+
+  .wordmark {
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+
+  .nav-right {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .nav-link {
+    background: none;
+    border: none;
+    text-decoration: none;
+    padding: 0;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 13px;
+    color: rgba(245, 243, 250, 0.85);
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .nav-link:hover {
+    opacity: 0.7;
+  }
+
+  .lang-toggle {
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 20px;
+    padding: 3px;
+    gap: 2px;
+  }
+
+  .lang-btn {
+    background: none;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 16px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: rgba(245, 243, 250, 0.55);
+    cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+
+  .lang-btn:hover {
+    color: rgba(245, 243, 250, 0.85);
+  }
+
+  .lang-btn.is-active {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--ink);
+  }
+
+  .menu-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+  }
+
+  .menu-btn span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--ink);
+  }
+
+  .particles {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .hero-body {
+    position: relative;
+    z-index: 2;
+    flex-grow: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(32px, 5vw, 96px);
+    padding: 12px clamp(24px, 6vw, 96px);
+    flex-wrap: wrap;
+    transition: opacity 0.16s ease;
+  }
+
+  .hero-body.is-switching {
+    opacity: 0.4;
+  }
+
+  .showcase {
+    display: flex;
+    align-items: center;
+    gap: clamp(20px, 2.4vw, 36px);
+    flex-shrink: 0;
+  }
+
+  .showcase-visual {
+    position: relative;
+    width: clamp(160px, 22vw, 320px);
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+    animation: float 6s ease-in-out infinite;
+    perspective: 900px;
+  }
+
+  .art-glow {
+    position: absolute;
+    inset: -35%;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.55;
+    transition: background 0.4s ease;
+    animation: pulse 7s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.12);
+    }
+  }
+
+  .art-ring {
+    position: absolute;
+    inset: -15%;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .art-logo {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    border-radius: 22%;
+    box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55);
+    display: block;
+    transform: perspective(900px) rotateX(6deg) rotateY(-12deg);
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.3, 1);
+    will-change: transform;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+
+  .screens {
+    position: relative;
+    width: clamp(230px, 24vw, 340px);
+    aspect-ratio: 100 / 136;
+    flex-shrink: 0;
+  }
+
+  .screen {
+    position: absolute;
+    left: 23%;
+    top: 0;
+    width: 54%;
+    aspect-ratio: 23 / 50;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 25px 55px rgba(0, 0, 0, 0.4);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease, filter 0.2s ease;
+  }
+
+  .screen-shot {
+    display: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  .screens.has-shots .screen-shot {
+    display: block;
+  }
+
+  .screens.has-shots .screen-header,
+  .screens.has-shots .screen-line,
+  .screens.has-shots .screen-row,
+  .screens.has-shots .screen-grid,
+  .screens.has-shots .screen-bars {
+    display: none;
+  }
+
+  .pos-left {
+    transform: translate(-43%, 16%) rotate(-9deg);
+    z-index: 1;
+    opacity: 0.75;
+  }
+
+  .pos-front {
+    transform: translate(0, 0) rotate(0deg);
+    z-index: 3;
+    opacity: 1;
+  }
+
+  .pos-right {
+    transform: translate(43%, 16%) rotate(9deg);
+    z-index: 2;
+    opacity: 0.75;
+  }
+
+  .screens.has-shots .screen {
+    cursor: pointer;
+  }
+
+  .screens.has-shots .screen:hover,
+  .screens.has-shots .screen:focus-visible {
+    filter: brightness(1.15);
+    outline: none;
+  }
+
+  .screen-header {
+    display: block;
+    width: 100%;
+    height: 30%;
+    border-radius: 10px;
+    background: var(--screen-color, var(--accent));
+    opacity: 0.85;
+  }
+
+  .screen-line {
+    display: block;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .screen-line.w70 {
+    width: 70%;
+  }
+
+  .screen-row {
+    display: block;
+    height: 14%;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .screen-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    flex-grow: 1;
+  }
+
+  .screen-grid span {
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .screen-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    flex-grow: 1;
+  }
+
+  .screen-bars span {
+    flex: 1;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  .screen-tag {
+    position: absolute;
+    bottom: -2px;
+    left: 23%;
+    width: 54%;
+    z-index: 4;
+    text-align: center;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 1.6vh, 18px);
+    width: clamp(400px, 34vw, 620px);
+    flex-shrink: 0;
+  }
+
+  .kicker {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .hero-text h1 {
+    font-size: clamp(36px, 5.5vw, 76px);
+    line-height: 1.02;
+  }
+
+  .hero-text p {
+    margin: 0;
+    font-size: clamp(15px, 1.2vw, 18px);
+    line-height: 1.5;
+    color: var(--muted);
+    min-height: 3em;
+  }
+
+  .feature-list {
+    list-style: none;
+    margin: 2px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  /* :global because these <li> are re-created in JS on app switch, so they never
+     carry Astro's scoped data-astro-cid attribute that normal scoped rules need. */
+  :global(.feature-list li) {
+    font-size: clamp(13px, 1vw, 15px);
+    line-height: 1.4;
+    color: var(--ink);
+    padding-left: 15px;
+    position: relative;
+    min-height: 1.4em;
+  }
+
+  :global(.feature-list li::before) {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  :global(.feature-list li:first-child) {
+    font-weight: 700;
+    color: #fff;
+    padding-left: 20px;
+    min-height: 2.8em;
+  }
+
+  :global(.feature-list li:first-child::before) {
+    content: '✦';
+    top: -2px;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: none;
+    color: var(--feature-color, var(--accent));
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .hero-cta-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 6px;
+  }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 30px;
+    border-radius: 10px;
+    border: none;
+    background: var(--cta-color, var(--accent));
+    color: #1a1a1e;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    box-shadow: 0 16px 34px var(--cta-shadow, rgba(255, 47, 120, 0.4));
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  }
+
+  .btn-outline:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.08);
+    box-shadow: 0 20px 42px var(--cta-shadow, rgba(255, 47, 120, 0.5));
+  }
+
+  .btn-outline:active {
+    transform: translateY(-1px) scale(0.98);
+  }
+
+  .btn-outline:active {
+    transform: translateY(0) scale(0.97);
+  }
+
+  .btn-arrow {
+    transition: transform 0.25s ease;
+  }
+
+  .btn-outline:hover .btn-arrow {
+    transform: translateX(4px);
+  }
+
+  .btn-star {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 16px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+  }
+
+  .btn-star:hover {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-2px);
+  }
+
+  .btn-star:active {
+    transform: translateY(0) scale(0.97);
+  }
+
+  .btn-star .star-glyph {
+    color: var(--accent);
+  }
+
+  .btn-star .star-hint {
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .btn-solid {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .btn-solid:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(255, 47, 120, 0.3);
+  }
+
+  .hero-controls {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 8px 28px;
+    flex-shrink: 0;
+  }
+
+  .nav-arrow {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--ink);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .nav-arrow:hover {
+    transform: scale(1.1);
+    border-color: var(--accent);
+  }
+
+  .thumbs {
+    display: flex;
+    gap: 8px;
+  }
+
+  .thumb {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    padding: 4px;
+    border: none;
+    box-sizing: border-box;
+    background: none;
+    cursor: pointer;
+    opacity: 0.55;
+    transform: scale(0.92);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .thumb img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .thumb:hover {
+    opacity: 0.85;
+  }
+
+  .thumb.is-active {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .thumb-ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .thumb-ring-track,
+  .thumb-ring-fill {
+    fill: none;
+    stroke-width: 2.5px;
+  }
+
+  .thumb-ring-track {
+    stroke: rgba(255, 255, 255, 0.1);
+  }
+
+  .thumb-ring-fill {
+    stroke: var(--dot-color, var(--accent));
+    stroke-linecap: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+  }
+
+  /* ---------- FAQ modal ---------- */
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(8, 4, 22, 0.7);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .modal-overlay.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .modal {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border-radius: 24px;
+    padding: 40px;
+    background: var(--panel-solid);
+    border: 1px solid var(--border);
+    box-shadow: 0 60px 120px rgba(0, 0, 0, 0.5);
+    transform: translateY(12px) scale(0.98);
+    transition: transform 0.25s ease;
+  }
+
+  .modal-overlay.is-open .modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .modal .eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .modal h2 {
+    font-size: 26px;
+    margin-top: 8px;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .modal-close:hover {
+    border-color: var(--accent);
+    transform: rotate(90deg);
+  }
+
+  /* ---------- Screenshot lightbox ---------- */
+
+  .lightbox-overlay {
+    z-index: 60;
+  }
+
+  .lightbox-frame {
+    width: min(96vw, 1200px);
+    height: 93vh;
+    transform: scale(0.9);
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.3, 1);
+  }
+
+  .lightbox-overlay.is-open .lightbox-frame {
+    transform: scale(1);
+  }
+
+  .lightbox-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    box-shadow: 0 60px 120px rgba(0, 0, 0, 0.6);
+    object-fit: contain;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 2;
+    background: rgba(10, 6, 24, 0.6);
+    backdrop-filter: blur(6px);
+  }
+
+  .lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: rgba(10, 6, 24, 0.6);
+    backdrop-filter: blur(6px);
+    color: var(--ink);
+    font-size: 22px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .lightbox-nav:hover {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .lightbox-prev {
+    left: 24px;
+  }
+
+  .lightbox-next {
+    right: 24px;
+  }
+
+  .faq-list {
+    margin-top: 22px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .faq-trigger {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    background: none;
+    border: none;
+    padding: 18px 2px;
+    text-align: left;
+    color: var(--ink);
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .faq-chevron {
+    flex-shrink: 0;
+    color: var(--muted);
+    font-size: 18px;
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+
+  .faq-item.is-open .faq-chevron {
+    transform: rotate(180deg);
+    color: var(--accent);
+  }
+
+  .faq-answer {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease, max-height 0.4s ease;
+  }
+
+  .faq-item.is-open .faq-answer {
+    max-height: 220px;
+    opacity: 1;
+    padding-bottom: 20px;
+  }
+
+  .faq-answer p {
+    margin: 0 0 12px;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .faq-answer .btn-solid {
+    padding: 10px 18px;
+    font-size: 12px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .art-glow,
+    .showcase-visual {
+      animation: none !important;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .hero {
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .particles {
+      position: fixed;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: rgba(21, 10, 48, 0.7);
+      backdrop-filter: blur(10px);
+      padding: 16px 20px;
+    }
+
+    .hero-body {
+      flex-direction: column;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      flex-grow: 0;
+      flex-shrink: 0;
+      padding: 20px 24px 190px;
+      gap: 20px;
+    }
+
+    .showcase {
+      flex-direction: column;
+      position: relative;
+      padding-bottom: 48px;
+    }
+
+    .showcase-visual {
+      position: absolute;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      z-index: 10;
+      width: clamp(68px, 18vw, 92px);
+      animation: none;
+    }
+
+    .art-ring {
+      display: none;
+    }
+
+    .art-glow {
+      inset: -20%;
+      filter: blur(40px);
+      opacity: 0.45;
+    }
+
+    .screens {
+      width: clamp(200px, 64vw, 260px);
+    }
+
+    .hero-text {
+      align-items: flex-start;
+      text-align: left;
+      width: 100%;
+    }
+
+    .hero-cta-row {
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: calc(96px + env(safe-area-inset-bottom));
+      z-index: 6;
+      margin: 0;
+      justify-content: center;
+      flex-wrap: nowrap;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 18px;
+      background: rgba(21, 10, 48, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-cta-row .btn-outline {
+      flex: 1;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 12px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .hero-cta-row .btn-star {
+      flex-shrink: 0;
+      padding: 10px 12px;
+      font-size: 12px;
+    }
+
+    .menu-btn {
+      display: none;
+    }
+
+    .nav-right {
+      gap: 14px;
+    }
+
+    .nav-link {
+      font-size: 12px;
+    }
+
+    .hero-controls {
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: calc(16px + env(safe-area-inset-bottom));
+      z-index: 5;
+      border-radius: 18px;
+      background: rgba(21, 10, 48, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+      padding: 8px 12px;
+    }
+  }
+</style>
