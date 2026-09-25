@@ -6,7 +6,6 @@ export const strings = {
   en: {
     kicker: 'For people who track their hobbies a little too closely',
     navFaq: 'FAQ',
-    navMenu: 'Menu',
     downloadLatest: 'Download latest',
     downloadPrefix: 'Download v',
     starIt: 'Star it',
@@ -48,7 +47,6 @@ export const strings = {
   fr: {
     kicker: 'Pour ceux qui suivent leurs loisirs d’un peu trop près',
     navFaq: 'FAQ',
-    navMenu: 'Menu',
     downloadLatest: 'Télécharger',
     downloadPrefix: 'Télécharger v',
     starIt: 'Étoile',

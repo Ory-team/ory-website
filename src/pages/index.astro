@@ -31,9 +31,6 @@ function hexToRgba(hex: string, alpha: number) {
             <button class="lang-btn" data-lang="fr" aria-label="Français">FR</button>
             <button class="lang-btn is-active" data-lang="en" aria-label="English">EN</button>
           </div>
-          <button class="menu-btn" id="menuBtn" aria-label={t.navMenu}>
-            <span></span><span></span><span></span>
-          </button>
         </div>
       </header>
 
@@ -656,23 +653,6 @@ function hexToRgba(hex: string, alpha: number) {
   .lang-btn.is-active {
     background: rgba(255, 255, 255, 0.12);
     color: var(--ink);
-  }
-
-  .menu-btn {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    background: none;
-    border: none;
-    padding: 6px;
-    cursor: pointer;
-  }
-
-  .menu-btn span {
-    display: block;
-    width: 18px;
-    height: 2px;
-    background: var(--ink);
   }
 
   .particles {
@@ -1483,10 +1463,6 @@ function hexToRgba(hex: string, alpha: number) {
       flex-shrink: 0;
       padding: 10px 12px;
       font-size: 12px;
-    }
-
-    .menu-btn {
-      display: none;
     }
 
     .nav-right {
