@@ -67,6 +67,7 @@ export const apps: OryApp[] = [
     logo: '/logos/ludory.png',
     githubOwner: 'Ory-team',
     githubRepo: 'Ludory-releases',
+    screenshots: ['/screenshots/ludory-1.jpg', '/screenshots/ludory-2.jpg', '/screenshots/ludory-3.jpg'],
   },
   {
     slug: 'showry',
@@ -94,6 +95,7 @@ export const apps: OryApp[] = [
     logo: '/logos/showry.png',
     githubOwner: 'Ory-team',
     githubRepo: 'Showry-releases',
+    screenshots: ['/screenshots/showry-1.jpg', '/screenshots/showry-2.jpg', '/screenshots/showry-3.jpg'],
   },
   {
     slug: 'libory',
@@ -121,5 +123,6 @@ export const apps: OryApp[] = [
     logo: '/logos/libory.png',
     githubOwner: 'Ory-team',
     githubRepo: 'Libory-releases',
+    screenshots: ['/screenshots/libory-1.jpg', '/screenshots/libory-2.jpg', '/screenshots/libory-3.jpg'],
   },
 ];
